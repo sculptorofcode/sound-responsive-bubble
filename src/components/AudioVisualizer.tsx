@@ -8,12 +8,23 @@ export const AudioVisualizer = () => {
   const { audioData, isListening, showBall } = useAudioAnalyzer();
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [previousState, setPreviousState] = useState<'ball' | 'bars'>('ball');
+  const [currentState, setCurrentState] = useState<'ball' | 'bars'>('ball');
 
   // Check if any sound is detected (above threshold)
   const hasSound = audioData.some(value => value > 5);
   
-  // Determine visualization state
-  const isCircle = showBall || !hasSound;
+  // Update visualization state based on sound
+  useEffect(() => {
+    if (hasInteracted) {
+      const newState = hasSound && !showBall ? 'bars' : 'ball';
+      
+      if (newState !== currentState) {
+        setPreviousState(currentState);
+        setCurrentState(newState);
+      }
+    }
+  }, [hasSound, showBall, hasInteracted, currentState]);
 
   // Request microphone permission
   const requestMicrophoneAccess = async () => {
@@ -38,7 +49,7 @@ export const AudioVisualizer = () => {
           <h2 className="text-2xl font-light tracking-tight">Sound Visualizer</h2>
           <p className="text-muted-foreground">
             This application transforms your voice into an interactive visualization.
-            Speak to see the white ball transform into responsive audio bars.
+            Speak to see the ball transform into responsive audio bars.
           </p>
           <button
             onClick={requestMicrophoneAccess}
@@ -66,21 +77,26 @@ export const AudioVisualizer = () => {
             <p>Speak to transform the ball into audio bars. After 10 seconds of silence, it returns to a ball.</p>
           </div>
           
-          {isCircle ? (
+          {currentState === 'ball' ? (
             /* Ball visualization */
             <div 
               className={cn(
-                "audio-ball bg-white/90 rounded-full animate-pulse-subtle animate-float",
-                !hasInteracted && "opacity-50"
+                "audio-ball rounded-full animate-float",
+                previousState === 'bars' ? "bars-to-ball" : ""
               )}
               style={{
                 width: '200px',
                 height: '200px',
+                background: 'linear-gradient(to right, rgb(59, 130, 246), rgb(124, 58, 237))',
+                opacity: hasInteracted ? 1 : 0.5,
               }}
             />
           ) : (
             /* Bar visualization */
-            <div className="flex items-end justify-center space-x-4 h-64">
+            <div className={cn(
+              "flex items-end justify-center space-x-4 h-64",
+              previousState === 'ball' ? "ball-to-bars" : ""
+            )}>
               {audioData.map((value, index) => (
                 <div
                   key={index}
