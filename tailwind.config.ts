@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -70,25 +71,37 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'pulse-subtle': {
+					'0%, 100%': { transform: 'scale(1)' },
+					'50%': { transform: 'scale(1.05)' }
+				},
+				'morph-to-bars': {
+					'0%': { borderRadius: '50%', width: '200px', height: '200px' },
+					'100%': { borderRadius: '2px', width: '200px', height: '10px' }
+				},
+				'morph-to-circle': {
+					'0%': { borderRadius: '2px', width: '200px', height: '10px' },
+					'100%': { borderRadius: '50%', width: '200px', height: '200px' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-subtle': 'pulse-subtle 4s ease-in-out infinite',
+				'morph-to-bars': 'morph-to-bars 0.5s forwards ease-in-out',
+				'morph-to-circle': 'morph-to-circle 0.5s forwards ease-in-out',
+				'float': 'float 6s ease-in-out infinite'
 			}
 		}
 	},
