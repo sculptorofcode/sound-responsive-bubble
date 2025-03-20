@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 
 export const useAudioAnalyzer = () => {
-  const [audioData, setAudioData] = useState<number[]>([0, 0, 0]);
+  const [audioData, setAudioData] = useState<number[]>([0, 0, 0, 0, 0]);
   const [isListening, setIsListening] = useState(false);
   const [lastSoundTime, setLastSoundTime] = useState(Date.now());
   
@@ -26,7 +26,7 @@ export const useAudioAnalyzer = () => {
       sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
       
       // Configure analyser
-      analyserRef.current.fftSize = 32; // Small FFT for just a few data points
+      analyserRef.current.fftSize = 64; // Increased FFT for more data points
       sourceRef.current.connect(analyserRef.current);
       
       setIsListening(true);
@@ -51,16 +51,20 @@ export const useAudioAnalyzer = () => {
       
       analyserRef.current.getByteFrequencyData(dataArray);
       
-      // We only need 3 frequency bands for our visualization
-      const lowFreq = Math.max(1, dataArray[1] || 0); // Bass (low frequency)
-      const midFreq = Math.max(1, dataArray[5] || 0); // Mids
-      const highFreq = Math.max(1, dataArray[10] || 0); // Highs
+      // We now need 5 frequency bands for our visualization
+      const lowFreq1 = Math.max(1, dataArray[1] || 0); // Very low frequency
+      const lowFreq2 = Math.max(1, dataArray[3] || 0); // Low frequency
+      const midFreq = Math.max(1, dataArray[8] || 0); // Mids
+      const highFreq1 = Math.max(1, dataArray[14] || 0); // High frequency
+      const highFreq2 = Math.max(1, dataArray[20] || 0); // Very high frequency
       
       // Normalize to 0-100 range
       const normalizedData = [
-        lowFreq / 255 * 100,
+        lowFreq1 / 255 * 100,
+        lowFreq2 / 255 * 100,
         midFreq / 255 * 100,
-        highFreq / 255 * 100
+        highFreq1 / 255 * 100,
+        highFreq2 / 255 * 100
       ];
       
       setAudioData(normalizedData);
@@ -81,7 +85,7 @@ export const useAudioAnalyzer = () => {
           silenceTimeoutRef.current = setTimeout(() => {
             // If we've been silent for 10 seconds
             if (Date.now() - lastSoundTime >= 10000) {
-              setAudioData([0, 0, 0]);
+              setAudioData([0, 0, 0, 0, 0]);
             }
           }, 10000);
         }
