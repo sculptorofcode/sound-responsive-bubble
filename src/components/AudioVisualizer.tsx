@@ -3,6 +3,10 @@ import { useEffect, useState } from 'react';
 import { useAudioAnalyzer } from '@/hooks/useAudioAnalyzer';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { MessageSquare, ArrowLeft, History } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { ChatDisplay } from '@/components/ChatDisplay';
 
 export const AudioVisualizer = () => {
   const { audioData, isListening, showBall } = useAudioAnalyzer();
@@ -10,6 +14,7 @@ export const AudioVisualizer = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [previousState, setPreviousState] = useState<'ball' | 'bars'>('ball');
   const [currentState, setCurrentState] = useState<'ball' | 'bars'>('ball');
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   // Check if any sound is detected (above threshold)
   const hasSound = audioData.some(value => value > 5);
@@ -100,7 +105,7 @@ export const AudioVisualizer = () => {
               {audioData.map((value, index) => (
                 <div
                   key={index}
-                  className="audio-bar bg-white/90 rounded-full w-16"
+                  className="audio-bar bg-white/90 rounded-full w-10"
                   style={{
                     height: `${Math.max(5, value)}%`,
                     transformOrigin: 'center',
@@ -110,6 +115,21 @@ export const AudioVisualizer = () => {
               ))}
             </div>
           )}
+          
+          {/* Chat interface button */}
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger asChild>
+              <Button 
+                className="absolute bottom-4 right-4 rounded-full w-12 h-12 p-0 flex items-center justify-center bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
+                aria-label="Open chat"
+              >
+                <MessageSquare className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:w-[400px] md:w-[550px] p-0">
+              <ChatDisplay onBackClick={() => setSheetOpen(false)} />
+            </SheetContent>
+          </Sheet>
         </div>
       )}
     </div>
