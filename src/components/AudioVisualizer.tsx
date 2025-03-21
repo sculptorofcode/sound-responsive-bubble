@@ -94,16 +94,16 @@ export const AudioVisualizer = () => {
           ) : (
             /* Bar visualization */
             <div className={cn(
-              "flex items-end justify-center space-x-1 h-64",
+              "flex items-center justify-center space-x-1 h-64",
               previousState === 'ball' ? "ball-to-bars" : ""
             )}>
               {audioData.map((value, index) => (
                 <div
                   key={index}
-                  className="audio-bar bg-white/90 rounded-t-lg w-16"
+                  className="audio-bar bg-white/90 rounded-lg w-16"
                   style={{
                     height: `${Math.max(5, value)}%`,
-                    transformOrigin: 'bottom center',
+                    transformOrigin: 'center',
                     transition: 'height 0.1s ease-out'
                   }}
                 />
