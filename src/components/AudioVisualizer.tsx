@@ -100,7 +100,7 @@ export const AudioVisualizer = () => {
               {audioData.map((value, index) => (
                 <div
                   key={index}
-                  className="audio-bar bg-white/90 rounded-lg w-16"
+                  className="audio-bar bg-white/90 rounded-full w-16"
                   style={{
                     height: `${Math.max(5, value)}%`,
                     transformOrigin: 'center',
