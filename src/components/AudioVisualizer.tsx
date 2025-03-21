@@ -3,10 +3,16 @@ import { useEffect, useState } from 'react';
 import { useAudioAnalyzer } from '@/hooks/useAudioAnalyzer';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { MessageSquare, ArrowLeft, History } from 'lucide-react';
+import { MessageSquare, ArrowLeft, History, Bell, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ChatDisplay } from '@/components/ChatDisplay';
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from '@/components/ui/popover';
+import { NotificationPanel } from '@/components/NotificationPanel';
 
 export const AudioVisualizer = () => {
   const { audioData, isListening, showBall } = useAudioAnalyzer();
@@ -15,6 +21,7 @@ export const AudioVisualizer = () => {
   const [previousState, setPreviousState] = useState<'ball' | 'bars'>('ball');
   const [currentState, setCurrentState] = useState<'ball' | 'bars'>('ball');
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   // Check if any sound is detected (above threshold)
   const hasSound = audioData.some(value => value > 5);
@@ -77,11 +84,6 @@ export const AudioVisualizer = () => {
             </span>
           </div>
           
-          {/* Instructions */}
-          <div className="absolute top-4 left-4 text-sm text-muted-foreground max-w-xs">
-            <p>Speak to transform the ball into audio bars. After 10 seconds of silence, it returns to a ball.</p>
-          </div>
-          
           {currentState === 'ball' ? (
             /* Ball visualization */
             <div 
@@ -105,7 +107,7 @@ export const AudioVisualizer = () => {
               {audioData.map((value, index) => (
                 <div
                   key={index}
-                  className="audio-bar bg-white/90 rounded-full w-10"
+                  className="audio-bar rounded-full bg-white/90 w-6"
                   style={{
                     height: `${Math.max(5, value)}%`,
                     transformOrigin: 'center',
@@ -116,20 +118,38 @@ export const AudioVisualizer = () => {
             </div>
           )}
           
-          {/* Chat interface button */}
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
-              <Button 
-                className="absolute bottom-4 right-4 rounded-full w-12 h-12 p-0 flex items-center justify-center bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
-                aria-label="Open chat"
-              >
-                <MessageSquare className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:w-[400px] md:w-[550px] p-0">
-              <ChatDisplay onBackClick={() => setSheetOpen(false)} />
-            </SheetContent>
-          </Sheet>
+          {/* Control buttons */}
+          <div className="fixed bottom-4 right-4 flex space-x-3">
+            {/* Notification panel */}
+            <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  className="rounded-full w-12 h-12 p-0 flex items-center justify-center bg-secondary text-secondary-foreground shadow-lg hover:bg-secondary/90"
+                  aria-label="Open notifications"
+                >
+                  <Bell className="h-6 w-6" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="end">
+                <NotificationPanel onClose={() => setNotificationOpen(false)} />
+              </PopoverContent>
+            </Popover>
+            
+            {/* Chat interface button */}
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <SheetTrigger asChild>
+                <Button 
+                  className="rounded-full w-12 h-12 p-0 flex items-center justify-center bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
+                  aria-label="Open chat"
+                >
+                  <MessageSquare className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-full sm:w-[400px] md:w-[550px] p-0">
+                <ChatDisplay onBackClick={() => setSheetOpen(false)} />
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       )}
     </div>
