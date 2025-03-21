@@ -51,7 +51,7 @@
 }
 
 .audio-bar {
-  transform-origin: bottom;
+  transform-origin: bottom center;
   transition: height 0.1s ease-in-out, opacity 0.3s ease-in-out;
 }
 
